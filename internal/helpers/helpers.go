@@ -3,7 +3,6 @@ package helpers
 import (
 	"context"
 	"fmt"
-	"slices"
 
 	"github.com/luispater/gemini-srt-translator-go/pkg/config"
 	"google.golang.org/genai"
@@ -116,9 +115,7 @@ func ListModels(ctx context.Context, client *genai.Client) ([]string, error) {
 		return nil, err
 	}
 	for _, model := range models.Items {
-		if slices.Contains(model.SupportedActions, "generateContent") {
-			m = append(m, model.Name)
-		}
+		m = append(m, model.Name)
 	}
 	return m, nil
 }
