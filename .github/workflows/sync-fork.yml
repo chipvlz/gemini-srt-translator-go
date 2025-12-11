@@ -1,0 +1,29 @@
+name: Sync Fork
+
+on:
+  schedule:
+    - cron: '0 */6 * * *' # Chạy mỗi 6 giờ
+  workflow_dispatch: # Cho phép chạy thủ công
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Lấy tất cả history để merge
+
+      - name: Sync with upstream
+        uses: actions/checkout@v3 # Checkout lại lần nữa để đảm bảo
+        with:
+          repository: 'luispater/gemini-srt-translator-go' # Thay bằng owner/repo gốc
+          path: 'upstream' # Tên thư mục tạm để fetch
+
+      - name: Merge upstream changes
+        run: |
+          git checkout ${{ github.ref_name }} # Chuyển về branch hiện tại
+          git merge upstream/${{ github.ref_name }} # Merge từ upstream
+          git push origin ${{ github.ref_name }} # Đẩy lên fork của bạn
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
